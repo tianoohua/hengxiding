@@ -1,0 +1,33 @@
+server:
+#  端口号
+  port: 8090
+  servlet:
+#web应用根路径
+    context-path: /ybsk
+spring:
+# springmvc中访问jsp的路径
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+#    devtools  前端页面修改
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ylzb?characterEncoding=UTF-8
+    username: ylfwzb
+    password: ylfwzb
+    driver-class-name: com.mysql.jdbc.Driver
+#    新加数据库必填内容
+  jpa:
+    hibernate:
+      ddl-auto: update
+  devtools:
+    restart:
+      #添加那个目录的文件需要restart
+      additional-paths: src/main/java
+      #排除那个目录的文件不需要restart
+      exclude: static/**,public/**
+person:
+  age: 6
+  name: zhangsan

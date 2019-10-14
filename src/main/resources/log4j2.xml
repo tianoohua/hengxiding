@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--status : status用来指定log4j2本身的日志的级别-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+<!--monitorinterval : monitorinterval用于指定log4j自动重新配置的监测间隔时间，单位是s,最小是5s-->
+<configuration status="true" monitorInterval="20">
+    <!--在xml文件中，可以使用Properties 标签来自定义变量，方便其他地方的引用。-->
+    <properties>
+        <!-- 文件输出格式 -->
+        <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [-%thread] %c [%L] ---| %msg%n</property>
+        <property name="PATTERN1">[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n</property>
+        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%xwEx</Property>
+
+        <!--这里的log.path是定义日志存放的地方，此处是存放于项目根路径下的log文件夹中-->
+        <Property name="log.path">log</Property>
+    </properties>
+
+    <!--先定义所有的appender-->
+    <!--和logback一样，Appender是用来定义日志输出点的，一般常用有三个子节点，分别为Console、RollingFile、File。下面介绍一下各个子节点的用处及常用的属性-->
+    <appenders>
+        <!--name : 指定Appender的名字，用于Logger节点引用-->
+        <!--target : SYSTEM_OUT 或 SYSTEM_ERR,一般设置为:SYSTEM_OUT-->
+        <!--PatternLayout : 指定日志输出格式，默认为%m%n-->
+        <Console name="CONSOLE" target="system_out">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </Console>
+
+        <!--fileName : 指定输出日志的目的文件带全路径的文件名-->
+        <!--append : 是否追加，默认为ture。ture是将新日志追加到原日志文件尾部，false则是删除已有文件，重建新文件-->
+        <!--文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，这个也挺有用的，适合临时测试用-->
+        <File name="log" fileName="${log.path}/test.log" append="false">
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+        </File>
+
+        <!--filePattern:指定拆分出去的日志文件的全路径的文件名以及格式-->
+        <RollingFile name="RollingFileInfo" fileName="${log.path}/info.log"
+                     filePattern="${log.path}/logs/${date:yyyy-MM}/info-%d{yyyy-MM-dd_HHmm}.log.zip">
+
+            <!--ThresholdFilter : 日志过滤器-->
+            <!--只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+
+            <!--Policies : 指定滚动日志的策略，就是什么时候进行新建日志文件输出日志.-->
+            <Policies>
+                <!--TimeBasedTriggeringPolicy : 基于时间进行日志的滚动-->
+                <!--TimeBasedTriggeringPolicy这个滚动策略的属性interval，它是指日志进行滚动的间隔，那么它的单位具体是什么呢？关键点在于filePattern的日志文件名所含有的日期格式%d{yyyy-MM-dd},
+                这里日期格式具体到了天，那么以天为单位，若是日期具体到%d{yyyy-MM-dd-HH-mm}分钟的话，那么就是以分钟为单位-->
+                <TimeBasedTriggeringPolicy modulate="true" interval="60"/>
+                <!--SizeBasedTriggeringPolicy : 基于文件大小进行日志的滚动-->
+                <timeBasedFileNamingAndTriggeringPolicy >
+                    <maxFileSize>2MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <!--日志文件保留天数-->
+                <maxHistory>15</maxHistory>
+                <SizeBasedTriggeringPolicy size="4MB"></SizeBasedTriggeringPolicy>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO"/>
+        <logger name="com.baiding" level="INFO"/>
+
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="RollingFileInfo"/>
+        </root>
+    </loggers>
+
+</configuration>

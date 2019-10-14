@@ -1,0 +1,42 @@
+/*布局区域*/
+.box_con{
+    background-color: #ffffff;
+}
+#box_left{
+    width: 40%;
+}
+#box_left_top{
+    height: 18%;
+}
+#box_right{
+    width: 59%;
+}
+#box_right_bottom,#box_right_top{
+    height: 50%;
+}
+/*数据区域*/
+#fxxs_thb,#fxxs{
+    padding:0px 20px;
+}
+#fxxs{
+    display: inline-block;
+    font-size: 64px;
+    font-weight: bold;
+    letter-spacing:15px;
+    color: red;
+}
+#fxxstb,#fxxshb,.fxxs_p{
+    font-size: 18px;
+}
+.fxxs_p{
+    padding: 5px 10px;
+}
+#span_page{
+    display: none;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #4f94d6;
+}
+#div_line,#div_bar{
+    height: 100%;
+}
